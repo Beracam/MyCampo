@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "925264616898",
+    "project_id": "mycampo-6896f",
+    "storage_bucket": "mycampo-6896f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:925264616898:android:d215dd200359f7c1208a5b",
+        "android_client_info": {
+          "package_name": "it.mycampo.mycampo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxSuHjzTFEIarNuOSbcaCqnxhQ6uceNyw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
