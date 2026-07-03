@@ -9,7 +9,7 @@ import '../firebase_auth/auth.dart';
 import '../translations.dart';
 
 /// Modèle de données pour un Terrain.
-class Terrain {
+class Terrain { // Classe de données
   final String id;
   final String imagePath;
   final String title;
@@ -18,7 +18,7 @@ class Terrain {
   final int playersCount;
   final double rating;
 
-  Terrain({
+  Terrain({ // Constructeur
     required this.id,
     required this.imagePath,
     required this.title,
@@ -43,7 +43,7 @@ class Terrain {
   }
 }
 
-/// Page principale après connexion. Affiche la liste des terrains disponibles.
+/// Page principale, Affiche la liste des terrains disponibles.
 class EventPage extends StatefulWidget {
   const EventPage({super.key, required this.title});
 
@@ -55,14 +55,14 @@ class EventPage extends StatefulWidget {
 
 class _EventPageState extends State<EventPage> {
   int _selectedIndex = 0; // Index pour la navigation par onglets (Explorer / Profil)
-  final User? user = Auth().currentUser;
-  final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = "";
+  final User? user = Auth().currentUser; // Récupère l'utilisateur connecté
+  final TextEditingController _searchController = TextEditingController(); // Contrôleur pour la barre de recherche
+  String _searchQuery = ""; // Chaîne de recherche
 
   @override
   void dispose() {
     _searchController.dispose();
-    super.dispose();
+    super.dispose(); // Libère les ressources
   }
 
   /// Change de page lors du clic sur la barre de navigation.
@@ -83,8 +83,8 @@ class _EventPageState extends State<EventPage> {
 
         // Liste des écrans disponibles via la BottomNavigationBar
         final List<Widget> _pages = [
-          _buildExplorePage(isDark, lang),
-          const ProfilePage(),
+          _buildExplorePage(isDark, lang), // Page "Explorer"
+          const ProfilePage(), // Page "Profil"
         ];
 
         return Scaffold(
@@ -163,7 +163,7 @@ class _EventPageState extends State<EventPage> {
             ),
           ],
         ),
-        // Bandeau de bienvenue avec le pseudo de l'utilisateur
+        // Bienvenue avec le pseudo de l'utilisateur
         StreamBuilder<DocumentSnapshot>(
           stream: FirebaseFirestore.instance.collection('users').doc(user?.uid).snapshots(),
           builder: (context, snapshot) {
@@ -187,7 +187,7 @@ class _EventPageState extends State<EventPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text("Bienvenue !", style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(Translations.translate('welcome', lang), style: TextStyle(fontWeight: FontWeight.bold)),
                         Text(pseudo, style: TextStyle(fontSize: 14, color: isDark ? Colors.white70 : Colors.black87)),
                       ],
                     ),
@@ -258,7 +258,7 @@ class _EventPageState extends State<EventPage> {
     );
   }
 
-  /// Construit la carte visuelle pour un terrain donné.
+  /// Construction de la carte terrain
   Widget _buildTerrainCard(Terrain terrain, String lang) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     
@@ -279,7 +279,7 @@ class _EventPageState extends State<EventPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Image du terrain
-          ClipRRect(
+          ClipRRect( // Arrondi les coins
             borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
             child: Image.asset(
               terrain.imagePath,
@@ -304,7 +304,7 @@ class _EventPageState extends State<EventPage> {
                   textAlign: TextAlign.center,
                 ),
                 Text(
-                  "${terrain.price} / heure",
+                  "${terrain.price} /h",
                   style: const TextStyle(
                     color: Colors.green,
                     fontSize: 16,
@@ -346,18 +346,18 @@ class _EventPageState extends State<EventPage> {
                         children: [
                           Wrap(
                             spacing: -2,
-                            children: List.generate(terrain.playersCount, (index) {
-                              bool isGoalkeeper = index == terrain.playersCount - 1;
+                            children: List.generate(terrain.playersCount, (index) { // Génère des Icônes joueurs
+                              bool isGoalkeeper = index == terrain.playersCount - 1; // Dernier joueur est le gardien
                               return Icon(
-                                Icons.person,
+                                Icons.person, // Icône joueur
                                 size: 14,
-                                color: isGoalkeeper ? const Color(0xFF8A99A4) : const Color(0xFFC84040),
+                                color: isGoalkeeper ? const Color(0xFF8A99A4) : const Color(0xFFC84040), // Couleur du gardien
                               );
                             }),
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            "${terrain.playersCount} vs ${terrain.playersCount}",
+                            "${terrain.playersCount} vs ${terrain.playersCount}", // Affiche le nombre de joueurs
                             style: const TextStyle(fontSize: 11, color: Color(0xFF5E7381), fontWeight: FontWeight.bold),
                           ),
                         ],

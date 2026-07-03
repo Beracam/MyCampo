@@ -3,7 +3,7 @@ import '../firebase_auth/auth.dart';
 import 'package:mycampo/page/event_page.dart';
 import 'home_page.dart';
 
-/// Page de redirection automatique.
+/// Page de redirection
 /// Elle écoute l'état d'authentification de Firebase pour décider quelle page afficher au démarrage.
 class RedirectionPage extends StatefulWidget{
   const RedirectionPage({super.key});
@@ -18,14 +18,13 @@ class _RedirectionPageState extends State<RedirectionPage>{
 
   @override
   Widget build(BuildContext context){
-    // StreamBuilder écoute en temps réel le flux 'authStateChange' défini dans notre service Auth
+    // StreamBuilder écoute le flux 'authStateChange' défini dans le service Auth
     return StreamBuilder(
         stream: Auth().authStateChange,
         builder: (context, snapshot){
-          // Pendant que Firebase vérifie l'état de connexion
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (snapshot.connectionState == ConnectionState.waiting) { // Si en attente de données, on affiche un indicateur de chargement
             return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
+              body: Center(child: CircularProgressIndicator()), // Affiche un indicateur de chargement
             );
           }
 

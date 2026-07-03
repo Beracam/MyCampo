@@ -4,12 +4,12 @@ import 'package:mycampo/page/redirection_page.dart';
 
 import 'firebase_options.dart';
 
-/// Point d'entrée principal de l'application.
+
 Future<void> main() async {
-  // S'assure que les services Flutter sont initialisés avant toute autre opération
+  // Initialisé  les services Flutter
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialisation de Firebase avec les options générées pour la plateforme actuelle
+  // Initialisation de Firebase
   await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform
   );
@@ -21,7 +21,7 @@ Future<void> main() async {
 /// Notificateur global pour la gestion du thème (Clair/Sombre)
 final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
 
-/// Notificateur global pour la gestion de la langue (Français par défaut)
+/// Notificateur global pour la gestion de la langue
 final ValueNotifier<Locale> localeNotifier = ValueNotifier(const Locale('fr'));
 
 class MyApp extends StatelessWidget {
@@ -42,14 +42,14 @@ class MyApp extends StatelessWidget {
               title: 'MyCampo',
               locale: currentLocale, // Applique la langue actuelle
               
-              // Configuration du thème Clair
+              // thème Clair
               theme: ThemeData(
                 useMaterial3: true,
                 brightness: Brightness.light,
                 colorSchemeSeed: Colors.green,
               ),
               
-              // Configuration du thème Sombre
+              //  thème Sombre
               darkTheme: ThemeData(
                 useMaterial3: true,
                 brightness: Brightness.dark,
@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
               ),
               
               themeMode: currentMode, // Gère le passage Clair/Sombre
-              home: const RedirectionPage(), // Redirection vers la page appropriée selon l'auth
+              home: const RedirectionPage(),
             );
           },
         );

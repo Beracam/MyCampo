@@ -214,7 +214,7 @@ class _AddTerrainPageState extends State<AddTerrainPage> {
                   // Saisie du prix
                   TextFormField(
                     controller: _priceController,
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.number, // Clavier numérique
                     decoration: InputDecoration(
                       labelText: Translations.translate('field_price', lang),
                       prefixIcon: const Icon(Icons.money),

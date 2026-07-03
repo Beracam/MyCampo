@@ -5,8 +5,8 @@ import '../main.dart';
 import '../translations.dart';
 import 'event_page.dart';
 
-/// Page de réservation d'un terrain spécifique.
-/// Permet de choisir une date et un créneau horaire de 2h parmi ceux disponibles.
+/// Page de réservation de terrain .
+/// Permet de choisir une date et un créneau horaire parmi ceux disponibles.
 class ReservationPage extends StatefulWidget {
   final Terrain terrain;
 
@@ -31,8 +31,8 @@ class _ReservationPageState extends State<ReservationPage> {
   @override
   void initState() {
     super.initState();
-    _loadTerrainHours();          // 1. Initialise les horaires d'ouverture
-    _loadExistingReservations();  // 2. Écoute les réservations existantes sur Firestore
+    _loadTerrainHours();          //  Initialise les horaires d'ouverture
+    _loadExistingReservations();  //  Écoute les réservations existantes sur Firestore
   }
 
   /// Initialise les horaires d'ouverture du terrain à partir des données ou par défaut.
@@ -43,17 +43,17 @@ class _ReservationPageState extends State<ReservationPage> {
     _closeHour = 22;
     _closeMinute = 15;
     
-    // Tente de charger les vraies heures depuis Firestore pour ce terrain
+    // Récupère les vraies heures du terrain depuis Firestore
     _fetchHoursFromFirestore();
   }
 
   /// Récupère les horaires réels configurés par le propriétaire du terrain.
   Future<void> _fetchHoursFromFirestore() async {
     final doc = await FirebaseFirestore.instance.collection('terrains').doc(widget.terrain.id).get();
-    if (doc.exists && doc.data()!['openHour'] != null) {
-      if (mounted) {
+    if (doc.exists && doc.data()!['openHour'] != null) { // Vérifie si les données existent
+      if (mounted) { // Vérifie si le widget est encore en vie
         setState(() {
-          _openHour = doc.data()!['openHour'];
+          _openHour = doc.data()!['openHour']; // Met à jour les valeurs
           _openMinute = doc.data()!['openMinute'];
           _closeHour = doc.data()!['closeHour'];
           _closeMinute = doc.data()!['closeMinute'];
@@ -67,12 +67,12 @@ class _ReservationPageState extends State<ReservationPage> {
     FirebaseFirestore.instance
         .collection('reservations')
         .where('terrainId', isEqualTo: widget.terrain.id)
-        .snapshots()
+        .snapshots() // Écoute en temps réel
         .listen((snapshot) {
       if (mounted) {
         setState(() {
           _existingReservations = snapshot.docs.map((doc) {
-            Timestamp ts = doc.get('date');
+            Timestamp ts = doc.get('date');  // Récupère l'objet Timestamp
             int hour = doc.get('hour');
             int minute = doc.get('minute');
             DateTime d = ts.toDate();
@@ -84,9 +84,9 @@ class _ReservationPageState extends State<ReservationPage> {
     });
   }
 
-  /// Génère la liste des créneaux de 2h possibles entre l'ouverture et la fermeture.
+  /// Génère la liste des créneaux de 2h à partir de l'heure de début et de fin.
   List<TimeOfDay> _generateSlots() {
-    List<TimeOfDay> slots = [];
+    List<TimeOfDay> slots = []; // Liste des créneaux disponibles
     DateTime current = DateTime(2000, 1, 1, _openHour, _openMinute);
     final DateTime end = DateTime(2000, 1, 1, _closeHour, _closeMinute);
 
@@ -96,10 +96,10 @@ class _ReservationPageState extends State<ReservationPage> {
       slots.add(TimeOfDay(hour: current.hour, minute: current.minute));
       current = current.add(const Duration(hours: 2));
     }
-    return slots;
+    return slots; // Retourne la liste des créneaux
   }
 
-  /// Vérifie si un créneau spécifique est déjà réservé dans la base de données.
+  /// Vérifie si un créneau est déjà réservé dans la base de données.
   bool _isSlotOccupied(DateTime start) {
     for (var existing in _existingReservations) {
       if (existing.year == start.year &&
@@ -107,10 +107,10 @@ class _ReservationPageState extends State<ReservationPage> {
           existing.day == start.day &&
           existing.hour == start.hour &&
           existing.minute == start.minute) {
-        return true;
+        return true; // Slot déjà réservé
       }
     }
-    return false;
+    return false; // Slot disponible
   }
 
   /// Enregistre la réservation dans Firestore.
@@ -137,14 +137,14 @@ class _ReservationPageState extends State<ReservationPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(Translations.translate('success_reservation', lang)), backgroundColor: Colors.green),
+          SnackBar(content: Text(Translations.translate('success_reservation', lang)), backgroundColor: Colors.green), // Affiche un message de succès
         );
         Navigator.pop(context); // Retour à la liste
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Erreur: $e"), backgroundColor: Colors.red),
+          SnackBar(content: Text("Erreur: $e"), backgroundColor: Colors.red), // Affiche un message d'erreur
         );
       }
     } finally {
@@ -210,7 +210,7 @@ class _ReservationPageState extends State<ReservationPage> {
                       firstDate: DateTime.now(),
                       lastDate: DateTime.now().add(const Duration(days: 30)),
                     );
-                    if (picked != null) setState(() { _selectedDate = picked; _selectedStartTime = null; });
+                    if (picked != null) setState(() { _selectedDate = picked; _selectedStartTime = null; }); // Met à jour la date sélectionnée
                   },
                   shape: RoundedRectangleBorder(side: const BorderSide(color: Colors.grey), borderRadius: BorderRadius.circular(10)),
                 ),

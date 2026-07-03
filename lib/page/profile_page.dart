@@ -73,8 +73,22 @@ class ProfilePage extends StatelessWidget {
             child: Text(Translations.translate('cancel_btn', lang), style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(Translations.translate('save', lang), style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+            onPressed: () {
+              final phone = controller.text.trim();
+              final regex = RegExp(r'^\+\d{1,3}([ .-]?\(?\d+\)?){1,5}$');
+              if (!regex.hasMatch(phone)) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(
+                      Translations.translate('invalid_phone', lang)
+                  )),
+                );
+                return; // Empêche la fermeture du dialogue
+              }
+              Navigator.pop(context, true); // Numéro valide
+            },
+            child: Text(
+              Translations.translate('save', lang), style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -126,22 +140,19 @@ class ProfilePage extends StatelessWidget {
                       .where('terrainId', isEqualTo: terrainId)
                       .snapshots(),
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+                    if (snapshot.connectionState == ConnectionState.waiting)  return const Center(child: CircularProgressIndicator());
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                       return Center(child: Text(Translations.translate('no_reservations_field', lang)));
                     }
-
                     return ListView.builder(
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
                         final resData = snapshot.data!.docs[index].data() as Map<String, dynamic>;
-                        
                         String dateStr = "Date inconnue";
                         if (resData['date'] != null) {
                           final DateTime d = (resData['date'] as Timestamp).toDate();
                           dateStr = "${d.day}/${d.month}/${d.year}";
                         }
-
                         final int hour = resData['hour'] ?? 0;
                         final int minute = resData['minute'] ?? 0;
                         final String timeStr = "$hour:${minute.toString().padLeft(2, '0')}";
@@ -185,7 +196,7 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final User? user = FirebaseAuth.instance.currentUser;
+    final User? user = FirebaseAuth.instance.currentUser; // Récupère l'utilisateur connecté
 
     return ValueListenableBuilder<Locale>(
       valueListenable: localeNotifier,
@@ -204,18 +215,17 @@ class ProfilePage extends StatelessWidget {
           ),
           body: Column(
             children: [
-              // Section Informations de base de l'utilisateur
+              // Section Informations de l'utilisateur
               StreamBuilder<DocumentSnapshot>(
                 stream: FirebaseFirestore.instance.collection('users').doc(user?.uid).snapshots(),
                 builder: (context, snapshot) {
-                  String pseudo = "Utilisateur";
+                  String pseudo = "User";
                   String phone = "";
                   if (snapshot.hasData && snapshot.data!.exists) {
                     final data = snapshot.data!.data() as Map<String, dynamic>;
-                    pseudo = data['pseudo'] ?? "Utilisateur";
+                    pseudo = data['pseudo'] ?? "User";
                     phone = data['phone'] ?? "";
                   }
-
                   return Container(
                     padding: const EdgeInsets.all(20),
                     child: Row(
@@ -254,7 +264,7 @@ class ProfilePage extends StatelessWidget {
               ),
               const Divider(),
               
-              // Système d'onglets pour gérer les deux listes
+              // Onglets pour gérer les deux listes
               Expanded(
                 child: DefaultTabController(
                   length: 2,
@@ -300,7 +310,6 @@ class ProfilePage extends StatelessWidget {
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return Center(child: Text(Translations.translate('no_publications', lang)));
         }
-
         return ListView.builder(
           padding: const EdgeInsets.all(16),
           itemCount: snapshot.data!.docs.length,
@@ -308,7 +317,7 @@ class ProfilePage extends StatelessWidget {
             final doc = snapshot.data!.docs[index];
             final terrainData = doc.data() as Map<String, dynamic>;
             final terrain = Terrain.fromFirestore(doc);
-            
+
             return Card(
               margin: const EdgeInsets.only(bottom: 10),
               child: ListTile(
